@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::main}, 'Đặt hàng thành công', '')}">
+<body><main>
+
+    <div style="max-width:720px;margin:4rem auto;padding:0 1rem;">
+        <div style="background:var(--green);border:4px solid var(--black);box-shadow:8px 8px 0 var(--black);
+                    padding:2rem;text-align:center;margin-bottom:2rem;">
+            <div style="font-size:4rem;margin-bottom:0.5rem;">&#10003;</div>
+            <h1 style="font-size:2rem;margin-bottom:0.3rem;">Đặt hàng thành công!</h1>
+            <p style="font-size:1rem;max-width:40ch;margin:0 auto;">
+                Cà phê của bạn đang trên đường đến. Chúng tôi sẽ giao nhanh hơn bạn kịp nói "double espresso."
+            </p>
+        </div>
+
+        <div style="background:var(--white);border:4px solid var(--black);box-shadow:8px 8px 0 var(--black);
+                    padding:1.5rem;margin-bottom:1.5rem;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;
+                        padding-bottom:1.2rem;border-bottom:2px solid var(--black);">
+                <div>
+                    <div style="font-size:0.75rem;text-transform:uppercase;font-weight:700;color:#888;margin-bottom:0.3rem;">Mã đơn hàng</div>
+                    <div style="font-weight:800;font-size:1.2rem;" th:text="'#' + ${order.id}">#1</div>
+                </div>
+                <div>
+                    <div style="font-size:0.75rem;text-transform:uppercase;font-weight:700;color:#888;margin-bottom:0.3rem;">Trạng thái</div>
+                    <span class="badge badge--yellow" th:text="${order.status}">PENDING</span>
+                </div>
+                <div>
+                    <div style="font-size:0.75rem;text-transform:uppercase;font-weight:700;color:#888;margin-bottom:0.3rem;">Họ tên</div>
+                    <div style="font-weight:700;" th:text="${order.user != null ? order.user.fullName : order.guestName}">Tên</div>
+                </div>
+                <div>
+                    <div style="font-size:0.75rem;text-transform:uppercase;font-weight:700;color:#888;margin-bottom:0.3rem;">Email</div>
+                    <div style="font-weight:700;" th:text="${order.user != null ? order.user.email : order.guestEmail}">email</div>
+                </div>
+                <div th:if="${order.deliveryAddress}" style="grid-column:1/-1;">
+                    <div style="font-size:0.75rem;text-transform:uppercase;font-weight:700;color:#888;margin-bottom:0.3rem;">Địa chỉ giao hàng</div>
+                    <div style="font-weight:700;" th:text="${order.deliveryAddress}">Địa chỉ</div>
+                </div>
+            </div>
+
+            <h3 style="font-size:1rem;margin:1.2rem 0 0.8rem;">Sản phẩm đã đặt</h3>
+            <div th:each="item : ${order.items}"
+                 style="display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0;border-bottom:1px solid #eee;">
+                <div>
+                    <span style="font-weight:700;" th:text="${item.product.name}">Sản phẩm</span>
+                    <span style="color:#888;margin-left:0.5rem;" th:text="'x' + ${item.quantity}">x1</span>
+                </div>
+                <span style="font-weight:700;"
+                      th:text="${#numbers.formatDecimal(item.subtotal, 1, 'POINT', 0, 'COMMA')} + '₫'">0₫</span>
+            </div>
+
+            <div style="display:flex;justify-content:space-between;font-size:1.4rem;font-weight:800;
+                        padding-top:1rem;margin-top:0.5rem;border-top:3px solid var(--black);">
+                <span>Tổng thanh toán</span>
+                <span th:text="${#numbers.formatDecimal(order.totalAmount, 1, 'POINT', 0, 'COMMA')} + '₫'">0₫</span>
+            </div>
+        </div>
+
+        <div style="background:var(--yellow);border:4px solid var(--black);box-shadow:8px 8px 0 var(--black);
+                    padding:1.5rem;margin-bottom:2rem;">
+            <h3 style="margin-bottom:1rem;">Tiếp theo sẽ như thế nào?</h3>
+            <div style="display:flex;flex-direction:column;gap:0.8rem;">
+                <div style="display:flex;gap:0.8rem;align-items:flex-start;">
+                    <span style="background:var(--black);color:var(--yellow);font-weight:800;font-size:0.8rem;padding:0.2rem 0.5rem;min-width:28px;text-align:center;">1</span>
+                    <span style="font-weight:600;">Chúng tôi xác nhận đơn hàng và bắt đầu pha chế</span>
+                </div>
+                <div style="display:flex;gap:0.8rem;align-items:flex-start;">
+                    <span style="background:var(--black);color:var(--yellow);font-weight:800;font-size:0.8rem;padding:0.2rem 0.5rem;min-width:28px;text-align:center;">2</span>
+                    <span style="font-weight:600;">Đơn hàng được đóng gói và bàn giao cho shipper</span>
+                </div>
+                <div style="display:flex;gap:0.8rem;align-items:flex-start;">
+                    <span style="background:var(--black);color:var(--yellow);font-weight:800;font-size:0.8rem;padding:0.2rem 0.5rem;min-width:28px;text-align:center;">3</span>
+                    <span style="font-weight:600;">Giao đến tận cửa trong vòng 30 phút</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+            <a th:href="@{/products}" class="btn btn--primary btn--lg">&#9749; Đặt thêm</a>
+            <a th:href="@{/}" class="btn btn--outline btn--lg">Về trang chủ</a>
+        </div>
+    </div>
+
+</main></body>
+</html>

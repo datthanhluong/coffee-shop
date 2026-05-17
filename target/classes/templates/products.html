@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::main}, 'Thực đơn', 'products')}">
+<body><main>
+
+    <div class="page-header">
+        <h1>Thực Đơn</h1>
+        <p>Mỗi ly được pha chế với tâm huyết. Khám phá toàn bộ lineup.</p>
+    </div>
+
+    <div class="section">
+        <form th:action="@{/products}" method="get" class="search-bar">
+            <input type="text" name="q" th:value="${searchQuery}" placeholder="Tìm kiếm cà phê..."/>
+            <button type="submit">Tìm</button>
+        </form>
+
+        <div class="filter-bar">
+            <a th:href="@{/products}"
+               th:classappend="${selectedCategory == null and searchQuery == null} ? ' active'">Tất cả</a>
+            <a th:each="cat : ${categories}"
+               th:href="@{/products(category=${cat})}"
+               th:text="${cat}"
+               th:classappend="${selectedCategory == cat} ? ' active'">Danh mục</a>
+        </div>
+
+        <div th:if="${selectedCategory != null or searchQuery != null}"
+             style="margin-bottom:1rem;display:flex;align-items:center;gap:1rem;">
+            <span th:if="${selectedCategory != null}" class="badge badge--black"
+                  th:text="'Danh mục: ' + ${selectedCategory}"></span>
+            <span th:if="${searchQuery != null}" class="badge badge--black"
+                  th:text="'Tìm kiếm: ' + ${searchQuery}"></span>
+            <a th:href="@{/products}" class="btn btn--outline"
+               style="padding:0.3rem 0.8rem;font-size:0.8rem;">Xoá &times;</a>
+        </div>
+
+        <div th:if="${products.isEmpty()}" class="empty-state">
+            <div class="empty-state__icon">
+                <img th:src="@{/images/logo-transparent.png}" alt="LENGKENG" style="height:100px;width:auto;"/>
+            </div>
+            <h2>Không tìm thấy sản phẩm</h2>
+            <p>Thử danh mục khác hoặc từ khoá khác nhé.</p>
+            <a th:href="@{/products}" class="btn btn--primary">Xem tất cả</a>
+        </div>
+
+        <div th:unless="${products.isEmpty()}" class="product-grid">
+            <div th:each="product : ${products}" class="card">
+                <img th:if="${product.imageUrl != null}"
+                     th:src="@{${product.imageUrl}}" th:alt="${product.name}" class="card__img"/>
+                <div th:unless="${product.imageUrl != null}" class="card__img--placeholder">
+                    <img th:src="@{/images/logo-transparent.png}" alt="LENGKENG Coffee"/>
+                </div>
+                <div class="card__body">
+                    <span class="card__category" th:text="${product.category}">Espresso</span>
+                    <h3 class="card__title" th:text="${product.name}">Tên cà phê</h3>
+                    <p class="card__desc" th:text="${#strings.abbreviate(product.description, 90)}">Mô tả</p>
+                    <div class="card__footer">
+                        <span class="card__price"
+                              th:text="${#numbers.formatDecimal(product.price, 1, 'POINT', 0, 'COMMA')} + '₫'">35.000₫</span>
+                        <div style="display:flex;gap:0.5rem;">
+                            <a th:href="@{/products/{id}(id=${product.id})}" class="btn btn--outline">Chi tiết</a>
+                            <form th:action="@{/cart/add}" method="post">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                <input type="hidden" name="productId" th:value="${product.id}"/>
+                                <input type="hidden" name="quantity" value="1"/>
+                                <button type="submit" class="btn btn--primary">+ Giỏ</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main></body>
+</html>

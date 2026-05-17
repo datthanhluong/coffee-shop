@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::main}, '403 Forbidden', '')}">
+<body><main>
+    <div class="empty-state" style="margin:4rem auto;max-width:560px;">
+        <div class="empty-state__icon">&#128683;</div>
+        <h2>Access Denied</h2>
+        <p>You don't have permission to view this page.</p>
+        <a th:href="@{/}" class="btn btn--primary mt-2">Go Home</a>
+    </div>
+</main></body>
+</html>

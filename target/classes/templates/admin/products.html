@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::main}, 'Quản lý sản phẩm', 'admin')}">
+<body><main>
+<div class="admin-layout">
+    <aside class="admin-sidebar">
+        <div style="color:var(--yellow);font-weight:800;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;padding:0.5rem 1rem;margin-bottom:0.5rem;">Menu</div>
+        <a th:href="@{/admin}">          &#128202; Bảng điều khiển</a>
+        <a th:href="@{/admin/products}" class="active">&#9749; Sản phẩm</a>
+        <a th:href="@{/admin/orders}">   &#128230; Đơn hàng</a>
+        <a th:href="@{/}">             &#8592; Cửa hàng</a>
+    </aside>
+    <div class="admin-content">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+            <h1>Sản Phẩm</h1>
+            <a th:href="@{/admin/products/new}" class="btn btn--primary">+ Thêm sản phẩm</a>
+        </div>
+
+        <div th:if="${successMsg}" class="flash flash--success" th:text="${successMsg}"></div>
+        <div th:if="${errorMsg}"   class="flash flash--error"   th:text="${errorMsg}"></div>
+
+        <div th:if="${products.isEmpty()}" class="empty-state">
+            <div class="empty-state__icon">&#9749;</div>
+            <h2>Chưa có sản phẩm</h2>
+            <a th:href="@{/admin/products/new}" class="btn btn--primary mt-2">+ Thêm sản phẩm</a>
+        </div>
+
+        <div th:unless="${products.isEmpty()}" class="table-wrap">
+            <table>
+                <thead><tr><th>#</th><th>Tên sản phẩm</th><th>Danh mục</th><th>Giá</th><th>Nổi bật</th><th>Trạng thái</th><th>Hành động</th></tr></thead>
+                <tbody>
+                    <tr th:each="product : ${products}">
+                        <td style="font-weight:800;color:#888;font-size:0.85rem;" th:text="${product.id}">1</td>
+                        <td>
+                            <div style="font-weight:700;" th:text="${product.name}">Tên</div>
+                            <div style="font-size:0.8rem;color:#888;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                                 th:text="${product.description}">Mô tả</div>
+                        </td>
+                        <td><span class="badge badge--black" th:text="${product.category}">Danh mục</span></td>
+                        <td style="font-weight:800;"
+                            th:text="${#numbers.formatDecimal(product.price,1,'POINT',0,'COMMA')} + '₫'">0₫</td>
+                        <td>
+                            <span th:if="${product.featured}"  class="badge badge--yellow">&#11088; Có</span>
+                            <span th:unless="${product.featured}" style="color:#aaa;font-size:0.85rem;">—</span>
+                        </td>
+                        <td>
+                            <span th:if="${product.available}"  class="badge badge--green">Đang bán</span>
+                            <span th:unless="${product.available}" class="badge badge--red">Ẩn</span>
+                        </td>
+                        <td>
+                            <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+                                <a th:href="@{/admin/products/{id}/edit(id=${product.id})}"
+                                   class="btn" style="padding:0.3rem 0.7rem;font-size:0.8rem;">Sửa</a>
+                                <form th:action="@{/admin/products/{id}/toggle(id=${product.id})}" method="post" style="margin:0;">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                    <button type="submit" class="btn btn--outline" style="padding:0.3rem 0.7rem;font-size:0.8rem;"
+                                            th:text="${product.available} ? 'Ẩn' : 'Hiện'">Toggle</button>
+                                </form>
+                                <form th:action="@{/admin/products/{id}/delete(id=${product.id})}" method="post" style="margin:0;">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                    <button type="submit" class="btn btn--red" style="padding:0.3rem 0.7rem;font-size:0.8rem;"
+                                            data-confirm="Xoá sản phẩm này vĩnh viễn?">Xoá</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</main></body>
+</html>
